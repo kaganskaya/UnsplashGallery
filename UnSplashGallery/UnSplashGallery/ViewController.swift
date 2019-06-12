@@ -101,9 +101,14 @@ extension ViewController:UICollectionViewDelegate, UICollectionViewDataSource,UI
         
         searchBar.showsCancelButton = true
     
+        if (searchBar.text?.count)! >= 3{
+        
         self.searchPressed = true
 
-        self.viewDidLoad()
+            self.viewDidLoad()}else{
+            
+            searchBar.text = "Enter more than 3 characters"
+        }
 
     }
     
