@@ -18,6 +18,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var prevB: UIButton!
     @IBOutlet weak var collectionView: UICollectionView!
     
+    var index:Int = 0
     var photos:[Photo] = []
     var presenter =  Presenter()
     var page:Int = 1
@@ -158,7 +159,7 @@ extension ViewController:UICollectionViewDelegate, UICollectionViewDataSource,UI
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
        
-        
+        self.index = indexPath.row
         let url = self.photos[indexPath.row].urls.map({ i in i.small! })
        
             blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
@@ -174,18 +175,32 @@ extension ViewController:UICollectionViewDelegate, UICollectionViewDataSource,UI
         
             zoomView = UIView(frame: CGRect(x: 0, y: self.view.bounds.midY-150, width: self.collectionView.bounds.width, height: self.collectionView.bounds.height/2))
 
-        let imvImage = UIImageView(frame: CGRect(x: zoomView.bounds.minX+10, y:zoomView.bounds.minY, width: zoomView.bounds.width-20, height: zoomView.bounds.height))
+        let imvImage = UIImageView(frame: CGRect(x: zoomView.bounds.minX+10, y:zoomView.bounds.minY, width: zoomView.bounds.width-20, height: zoomView.bounds.height-20))
        
             imvImage.downloadImageFrom(urlString: url!)
         
             imvImage.contentMode = .scaleAspectFit
+       
+       
+        let button = UIButton(type: .system)
+    
+       
+        button.frame = CGRect(x: zoomView.bounds.midX, y:  imvImage.bounds.maxY, width: zoomView.bounds.width/3, height: zoomView.bounds.height/20)
+        button.setTitle("Delete", for: .normal)
 
-            zoomView.addSubview(imvImage)
+        let tapB = UITapGestureRecognizer(target: self, action: #selector(self.buttonAction(sender:)))
+            button.addGestureRecognizer(tapB)
+        if self.searchPressed {
+            self.zoomView.addSubview(button)}
+        self.zoomView.addSubview(imvImage)
 
-     
+        
             self.view.addSubview(zoomView)
     }
-    
+    @objc func buttonAction(sender: UIButton!) {
+       self.photos.remove(at: self.index)
+        collectionView.reloadData()
+    }
     @objc func handleTap(sender: UITapGestureRecognizer? = nil) {
         self.blurEffectView.removeFromSuperview()
         self.zoomView.removeFromSuperview()
